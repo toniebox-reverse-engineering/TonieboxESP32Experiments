@@ -27,9 +27,15 @@ const long fadeTime = 500;
 const long fadeSteps = 64;
 
 const int powerDACPin = 45;
-const int resetDACPin = 26;
-const int powerSD = 48;
+const int resetDACPin = 48;
+const int powerSD = 47;
 
+const int SD_CMD = 38;
+const int SD_CLK = 35;
+const int SD_DAT0 = 36;
+const int SD_DAT1 = 37;
+const int SD_DAT2 = 33;
+const int SD_DAT3 = 34;
 
 RGBLed led(ledRPin, ledGPin, ledBPin, RGBLed::COMMON_CATHODE);
 Adafruit_I2CDevice dev = Adafruit_I2CDevice(0x19, &Wire);
@@ -56,7 +62,6 @@ void setup() {
   if (!lis.begin(0x19)) {
     Serial.println("LIS3DH not found...");
   }
-  Serial.println("LIS3DH ok");
 
   pinMode(powerSD, OUTPUT); //Triggers reset
   digitalWrite(powerSD, 0);
