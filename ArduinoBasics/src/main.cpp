@@ -56,6 +56,7 @@ void setup() {
   if (!lis.begin(0x19)) {
     Serial.println("LIS3DH not found...");
   }
+  Serial.println("LIS3DH ok");
 
   pinMode(powerSD, OUTPUT); //Triggers reset
   digitalWrite(powerSD, 0);
