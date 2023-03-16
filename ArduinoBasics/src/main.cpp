@@ -114,7 +114,7 @@ void setup() {
 
   Serial.println("SD ok");
   delay(500);
-  Serial.printf("SD size=%i, type=%i", SD_MMC.cardSize(), SD_MMC.cardType());
+  Serial.printf("SD size=%lld, type=%i", SD_MMC.cardSize(), SD_MMC.cardType());
   Serial.println("");
   listDir(SD_MMC, "/", 1);
 }
