@@ -41,10 +41,45 @@ RGBLed led(ledRPin, ledGPin, ledBPin, RGBLed::COMMON_CATHODE);
 Adafruit_I2CDevice dev = Adafruit_I2CDevice(0x19, &Wire);
 Adafruit_LIS3DH lis = Adafruit_LIS3DH();
 
+void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
+  Serial.printf("Listing directory: %s\n", dirname);
+
+  File root = fs.open(dirname);
+  if(!root){
+    Serial.println("Failed to open directory");
+    return;
+  }
+  if(!root.isDirectory()){
+    Serial.println("Not a directory");
+    return;
+  }
+
+  File file = root.openNextFile();
+  while(file){
+    if(file.isDirectory()){
+      Serial.print("  DIR : ");
+      Serial.println(file.name());
+      if(levels){
+        listDir(fs, file.path(), levels -1);
+      }
+    } else {
+      Serial.print("  FILE: ");
+      Serial.print(file.name());
+      Serial.print("  SIZE: ");
+      Serial.println(file.size());
+    }
+     file = root.openNextFile();
+  }
+}
+
 void setup() {
-  Serial.begin(9600);
+  esp_log_level_set("*", ESP_LOG_VERBOSE);
+  Serial.setDebugOutput(true);
+  Serial.begin(115200);
   Serial.println("");
   Serial.println("Team RevvoX hacking with the Toniebox =)");
+
+  Serial.println("Init pins");
   
   pinMode(wakeupPin, INPUT);
   pinMode(earLeftPin, INPUT);
@@ -54,6 +89,9 @@ void setup() {
   pinMode(powerDACPin, OUTPUT); 
   pinMode(resetDACPin, OUTPUT); 
 
+  pinMode(powerSD, OUTPUT);
+  digitalWrite(powerSD, 0);
+
   digitalWrite(resetDACPin, 0);
   digitalWrite(powerDACPin, 1);
   delay(10); 
@@ -62,25 +100,23 @@ void setup() {
   if (!lis.begin(0x19)) {
     Serial.println("LIS3DH not found...");
   }
-
-  pinMode(powerSD, OUTPUT); //Triggers reset
-  digitalWrite(powerSD, 0);
+  Serial.println("LIS3DH ok");
+  
   delay(100);
-
-  //37	SPICLK_P	Power	SD	Low = Power on
-  //38	GPIO33	DAT2	SD	
-  //39	GPIO34	DAT3	SD	
-  //40	GPIO35	CLK	SD	
-  //41	GPIO36	DAT0	SD	
-  //42	GPIO37	DAT1	SD	
-  //--	--	--	--	--
-  //43	GPIO38	CMD	SD
-
-  if (!SD_MMC.setPins(35, 38, 36, 37, 33, 34)) {
+  if (!SD_MMC.setPins(SD_CLK, SD_CMD, SD_DAT0, SD_DAT1, SD_DAT2, SD_DAT3)) {
     Serial.println("Couldn't set SD-Pins...");
-  } else if(!SD_MMC.begin()) {
+  } 
+
+  while (!SD_MMC.begin()) {
     Serial.println("Card mount failed");
+    delay(2000);
   }
+
+  Serial.println("SD ok");
+  delay(500);
+  Serial.printf("SD size=%i, type=%i", SD_MMC.cardSize(), SD_MMC.cardType());
+  Serial.println("");
+  listDir(SD_MMC, "/", 1);
 }
 
 void loop() {
