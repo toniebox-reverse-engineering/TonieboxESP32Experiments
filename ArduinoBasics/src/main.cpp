@@ -151,13 +151,8 @@ void loop() {
 
   TRF7962A::TAG_EVENT tagEvent = rfid.loop();
   if (tagEvent == TRF7962A::TAG_EVENT::TAG_PLACED) {
-    uint8_t tagUid[8];
     uint8_t txtUid[24];
-    sprintf(
-      (char*)txtUid,
-      "%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x",
-      tagUid[7], tagUid[6], tagUid[5], tagUid[4], tagUid[3], tagUid[2], tagUid[1], tagUid[0]
-    );
+    rfid.getUID(txtUid);
     Serial.printf("Tag detected, UID: %s", txtUid);
     Serial.println();
   } else if (tagEvent == TRF7962A::TAG_EVENT::TAG_REMOVED) {
