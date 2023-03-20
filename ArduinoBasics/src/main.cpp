@@ -155,8 +155,10 @@ void loop() {
     rfid.getUID(txtUid);
     Serial.printf("Tag detected, UID: %s", txtUid);
     Serial.println();
+    led.flash(RGBLed::WHITE, fadeTime);
   } else if (tagEvent == TRF7962A::TAG_EVENT::TAG_REMOVED) {
     Serial.println("Tag removed");
+    led.flash(RGBLed::YELLOW, fadeTime);
   } else {
     Serial.printf("Tag result: %i/%i", rfid.getLastResult(), rfid.getLastTrfStatus());
     Serial.println();
