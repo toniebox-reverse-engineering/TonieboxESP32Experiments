@@ -137,6 +137,8 @@ void TRF7962A::processInterrupt(IRQ_STATUS irqStatus) {
     if (trfBuffer[trfOffset] == trfBuffer[trfOffset+1] && trfBuffer[trfOffset+1] == trfBuffer[trfOffset+2]) { //Remove ghost bytes
       memmove(&trfBuffer[trfOffset], &trfBuffer[trfOffset+2], trfRxLength-2);
       trfRxLength -= 2;
+    } else {
+      trfRxLength -= 2; //WTF?
     }
     
     trfOffset += trfRxLength;
