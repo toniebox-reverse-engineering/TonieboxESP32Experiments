@@ -6,8 +6,12 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_I2CDevice.h>
 
+#include <TRF7962A.h>
+
 #include "FS.h"
 #include "SD_MMC.h"
+
+TRF7962A rfid = TRF7962A();
 
 const int wakeupPin = 7;
 const int AdcBuchPin = 8;
@@ -27,7 +31,7 @@ const long fadeTime = 500;
 const long fadeSteps = 64;
 
 const int powerDACPin = 45;
-const int resetDACPin = 48;
+const int resetDACPin = 26;
 const int powerSD = 47;
 
 const int SD_CMD = 38;
@@ -55,7 +59,7 @@ void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
   }
 
   File file = root.openNextFile();
-  while(file){
+  while(file) {
     if(file.isDirectory()){
       Serial.print("  DIR : ");
       Serial.println(file.name());
@@ -92,8 +96,9 @@ void setup() {
   pinMode(powerSD, OUTPUT);
   digitalWrite(powerSD, 0);
 
-  digitalWrite(resetDACPin, 0);
   digitalWrite(powerDACPin, 1);
+  delay(1);
+  digitalWrite(resetDACPin, 0);
   delay(10); 
   digitalWrite(resetDACPin, 1); //DAC IC2 0x18?
   Wire.setPins(i2c_sda, i2c_scl);
@@ -101,7 +106,9 @@ void setup() {
     Serial.println("LIS3DH not found...");
   }
   Serial.println("LIS3DH ok");
-  
+
+  rfid.begin(1, 13);
+
   delay(100);
   if (!SD_MMC.setPins(SD_CLK, SD_CMD, SD_DAT0, SD_DAT1, SD_DAT2, SD_DAT3)) {
     Serial.println("Couldn't set SD-Pins...");
@@ -126,6 +133,7 @@ void loop() {
   bool earLeft = digitalRead(earLeftPin);
   bool earRight = digitalRead(earRightPin);
 
+  
   Serial.print("R");
   led.crossFade(RGBLed::RED, RGBLed::GREEN, fadeSteps, fadeTime);
   Serial.print("G");
@@ -140,4 +148,22 @@ void loop() {
 
   Serial.printf("Buch=%i, Batt=%i, Wake=%i, earL=%i, earR=%i", buch, batt, wake, earLeft, earRight);
   Serial.println();
+
+  TRF7962A::TAG_EVENT tagEvent = rfid.loop();
+  if (tagEvent == TRF7962A::TAG_EVENT::TAG_PLACED) {
+    uint8_t tagUid[8];
+    uint8_t txtUid[24];
+    sprintf(
+      (char*)txtUid,
+      "%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x",
+      tagUid[7], tagUid[6], tagUid[5], tagUid[4], tagUid[3], tagUid[2], tagUid[1], tagUid[0]
+    );
+    Serial.printf("Tag detected, UID: %s", txtUid);
+    Serial.println();
+  } else if (tagEvent == TRF7962A::TAG_EVENT::TAG_REMOVED) {
+    Serial.println("Tag removed");
+  } else {
+    Serial.printf("Tag result: %i/%i", rfid.getLastResult(), rfid.getLastTrfStatus());
+    Serial.println();
+  }
 }
