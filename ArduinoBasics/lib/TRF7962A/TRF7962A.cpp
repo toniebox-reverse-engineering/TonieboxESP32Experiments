@@ -105,7 +105,7 @@ void TRF7962A::processInterrupt(IRQ_STATUS irqStatus) {
     trfStatus = TRF_STATUS::TX_COMPLETE; 
   } else if (irqStatus == IRQ_STATUS::TX_COMPLETE) {
     trfStatus = TRF_STATUS::TX_COMPLETE;
-    //sendCommand(DIRECT_COMMANDS::RESET_FIFO); //Really needed?
+    sendCommand(DIRECT_COMMANDS::RESET_FIFO); //Really needed?
   } else if((IRQ_STATUS)((uint8_t)irqStatus & (uint8_t)IRQ_STATUS::COLLISION_ERROR) == IRQ_STATUS::COLLISION_ERROR) {
     resetRFID();
     initRFID();
@@ -142,7 +142,7 @@ void TRF7962A::processInterrupt(IRQ_STATUS irqStatus) {
     }
     
     trfOffset += trfRxLength;
-    //sendCommand(DIRECT_COMMANDS::RESET_FIFO); //Really needed?
+    sendCommand(DIRECT_COMMANDS::RESET_FIFO); //Really needed?
     if (trfStatus == TRF_STATUS::RX_WAIT_EXTENSION)
       trfRxLength = trfOffset;
     trfStatus = TRF_STATUS::RX_COMPLETE;
@@ -167,7 +167,7 @@ void TRF7962A::processInterrupt(IRQ_STATUS irqStatus) {
     trfOffset = 0;
   } else {
     trfStatus = TRF_STATUS::PROTOCOL_ERROR;
-    //sendCommand(DIRECT_COMMANDS::RESET_FIFO);
+    sendCommand(DIRECT_COMMANDS::RESET_FIFO);
     clearIrqRegister();
   }
 }
@@ -225,7 +225,6 @@ void TRF7962A::readRegisterCont(uint8_t* buffer, uint8_t length) {
   spiEnable();
   SPI.transfer(data);
   SPI.setDataMode(SPI_MODE1);
-
   while(length-- > 0) {
     *buffer = SPI.transfer(0x00); //0xFF or 0x00? (Ghost bytes)
     buffer++;
