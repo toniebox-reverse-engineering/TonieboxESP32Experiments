@@ -89,7 +89,6 @@ void setup() {
   pinMode(earLeftPin, INPUT);
   pinMode(earRightPin, INPUT);
 
-  pinMode(earRightPin, INPUT);
   pinMode(powerDACPin, OUTPUT); 
   pinMode(resetDACPin, OUTPUT); 
 
