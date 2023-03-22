@@ -612,6 +612,11 @@ TRF7962A::TRF_STATUS TRF7962A::sendDataTag(uint8_t *sendBuffer, uint8_t sendLen,
 }
 
 void TRF7962A::getUID(uint8_t* uid) {
+  for (int i=0;i<7;i++) {
+    uid[i] = tagUid[i];
+  }
+}
+void TRF7962A::getUIDString(uint8_t* uid) {
   //size 24 (7 + 16 + 1)
   sprintf(
     (char*)uid,

@@ -67,6 +67,7 @@ class TRF7962A {
         bool isTagActive();
         ISO15693_RESULT getLastResult();
         TRF_STATUS getLastTrfStatus();
+        void getUIDString(uint8_t* uid);
         void getUID(uint8_t* uid);
 
         uint8_t readBlocks(uint8_t* data, uint8_t maxBlocks);

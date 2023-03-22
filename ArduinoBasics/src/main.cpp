@@ -152,7 +152,7 @@ void loop() {
   TRF7962A::TAG_EVENT tagEvent = rfid.loop();
   if (tagEvent == TRF7962A::TAG_EVENT::TAG_PLACED) {
     uint8_t txtUid[24];
-    rfid.getUID(txtUid);
+    rfid.getUIDString(txtUid);
     Serial.printf("Tag detected, UID: %s", txtUid);
     Serial.println();
     led.flash(RGBLed::WHITE, fadeTime);
