@@ -4,12 +4,12 @@
 #include <Wire.h>
 #include <RvX_LIS3DH_TB.h>
 
-#include <TRF7962A.h>
+#include <RvX_TRF7962A.h>
 
 #include "FS.h"
 #include "SD_MMC.h"
 
-TRF7962A rfid = TRF7962A();
+RvX_TRF7962A rfid = RvX_TRF7962A();
 
 const int wakeupPin = 7;
 const int AdcBuchPin = 8;
@@ -152,14 +152,14 @@ void loop() {
   Serial.printf("Buch=%i, Batt=%i, Wake=%i, earL=%i, earR=%i", buch, batt, wake, earLeft, earRight);
   Serial.println();
 
-  TRF7962A::TAG_EVENT tagEvent = rfid.loop();
-  if (tagEvent == TRF7962A::TAG_EVENT::TAG_PLACED) {
+  RvX_TRF7962A::TAG_EVENT tagEvent = rfid.loop();
+  if (tagEvent == RvX_TRF7962A::TAG_EVENT::TAG_PLACED) {
     uint8_t txtUid[24];
     rfid.getUIDString(txtUid);
     Serial.printf("Tag detected, UID: %s", txtUid);
     Serial.println();
     led.flash(RGBLed::WHITE, fadeTime);
-  } else if (tagEvent == TRF7962A::TAG_EVENT::TAG_REMOVED) {
+  } else if (tagEvent == RvX_TRF7962A::TAG_EVENT::TAG_REMOVED) {
     Serial.println("Tag removed");
     led.flash(RGBLed::YELLOW, fadeTime);
   } else {
