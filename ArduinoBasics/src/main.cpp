@@ -2,9 +2,7 @@
 #include <RGBLed.h>
 
 #include <Wire.h>
-#include <Adafruit_LIS3DH.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_I2CDevice.h>
+#include <RvX_LIS3DH_TB.h>
 
 #include <TRF7962A.h>
 
@@ -42,8 +40,7 @@ const int SD_DAT2 = 33;
 const int SD_DAT3 = 34;
 
 RGBLed led(ledRPin, ledGPin, ledBPin, RGBLed::COMMON_CATHODE);
-Adafruit_I2CDevice dev = Adafruit_I2CDevice(0x19, &Wire);
-Adafruit_LIS3DH lis = Adafruit_LIS3DH();
+RvX_LIS3DH_TB lis = RvX_LIS3DH_TB();
 
 void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
   Serial.printf("Listing directory: %s\n", dirname);
@@ -142,7 +139,14 @@ void loop() {
   Serial.println("");
 
   lis.read();
-  Serial.printf("LIS3DH: x=%i, y=%i, z=%i", lis.x, lis.y, lis.z);
+  Serial.printf("LIS3DH: x=%i, y=%i, z=%i, o=0x%02X", lis.x, lis.y, lis.z, lis.orientation);
+  Serial.println();
+
+  Serial.print("#Pitch/Roll: ");
+  Serial.print(lis.pitch);
+  Serial.print(", ");
+  Serial.println(lis.roll);
+  
   Serial.println("...");
 
   Serial.printf("Buch=%i, Batt=%i, Wake=%i, earL=%i, earR=%i", buch, batt, wake, earLeft, earRight);
