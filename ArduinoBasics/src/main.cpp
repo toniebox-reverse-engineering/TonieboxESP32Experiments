@@ -102,6 +102,11 @@ void setup() {
     Serial.println("LIS3DH not found...");
   }
   Serial.println("LIS3DH ok");
+  Serial.print("Range = "); Serial.print(2 << lis.getRange());  
+  Serial.println("G");
+  lis.setClick(2, 40);
+
+  dac.begin(0x19);
 
   rfid.begin(1, 13);
 
@@ -166,4 +171,12 @@ void loop() {
     Serial.printf("Tag result: %i/%i", rfid.getLastResult(), rfid.getLastTrfStatus());
     Serial.println();
   }
+  
+  uint8_t click = lis.getClick();
+  if (click == 0) return;
+  if (! (click & 0x30)) return;
+  Serial.print("Click detected (0x"); Serial.print(click, HEX); Serial.print("): ");
+  if (click & 0x10) Serial.print(" single click");
+  if (click & 0x20) Serial.print(" double click");
+  Serial.println();
 }
