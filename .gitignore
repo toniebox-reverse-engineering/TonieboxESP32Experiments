@@ -4,3 +4,4 @@ ArduinoBasics/platformio.ini
 ArduinoBasics/platformio.ini
 ArduinoBasics/lib/RvX-TRF7962A
 ArduinoBasics/lib/RvX-LIS3DH
+ArduinoBasics/lib/RvX-TLV320DAC3100

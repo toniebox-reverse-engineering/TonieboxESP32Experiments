@@ -6,10 +6,13 @@
 
 #include <RvX_TRF7962A.h>
 
+#include <RvX_TLV320DAC3100.h>
+
 #include "FS.h"
 #include "SD_MMC.h"
 
 RvX_TRF7962A rfid = RvX_TRF7962A();
+RvX_TLV320DAC3100 dac = RvX_TLV320DAC3100();
 
 const int wakeupPin = 7;
 const int AdcBuchPin = 8;
