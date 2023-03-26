@@ -33,6 +33,7 @@ const long fadeSteps = 64;
 
 const int powerDACPin = 45;
 const int resetDACPin = 26;
+const int gpioDACPin = 48;
 const int powerSD = 47;
 
 const int SD_CMD = 38;
@@ -91,25 +92,44 @@ void setup() {
 
   pinMode(powerDACPin, OUTPUT); 
   pinMode(resetDACPin, OUTPUT); 
+  pinMode(gpioDACPin, INPUT); 
 
   pinMode(powerSD, OUTPUT);
-  digitalWrite(powerSD, 0);
 
-  digitalWrite(powerDACPin, 1);
-  delay(1);
   digitalWrite(resetDACPin, 0);
+  digitalWrite(powerSD, 0);
+  digitalWrite(powerDACPin, 1);
   delay(10); 
-  digitalWrite(resetDACPin, 1); //DAC IC2 0x18?
+
+  
   Wire.setPins(i2c_sda, i2c_scl);
+  Wire.begin();
+
+  digitalWrite(resetDACPin, 1);
+  delay(100);
+  digitalWrite(resetDACPin, 0);
+  delay(100);
+
   if (!lis.begin(0x19)) {
     Serial.println("LIS3DH not found...");
+    while(true) { }
   }
   Serial.println("LIS3DH ok");
   Serial.print("Range = "); Serial.print(2 << lis.getRange());  
   Serial.println("G");
   lis.setClick(2, 40);
 
-  dac.begin(0x19);
+  if (!dac.begin(0x18)) {
+    Serial.println("DAC not found...");
+    while(true) {
+      digitalWrite(resetDACPin, 1);
+      delay(1000);
+      digitalWrite(resetDACPin, 0);
+      delay(10000);
+    }
+  }
+  Serial.println("DAC ok");
+  dac.beep();
 
   rfid.begin(1, 13);
 
