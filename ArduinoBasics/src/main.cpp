@@ -96,19 +96,14 @@ void setup() {
 
   pinMode(powerSD, OUTPUT);
 
-  digitalWrite(resetDACPin, 0);
   digitalWrite(powerSD, 0);
   digitalWrite(powerDACPin, 1);
-  delay(10); 
-
+  delay(100); 
+  digitalWrite(resetDACPin, 1);
+  delay(100);
   
   Wire.setPins(i2c_sda, i2c_scl);
   Wire.begin();
-
-  digitalWrite(resetDACPin, 1);
-  delay(100);
-  digitalWrite(resetDACPin, 0);
-  delay(100);
 
   if (!lis.begin(0x19)) {
     Serial.println("LIS3DH not found...");
@@ -129,7 +124,7 @@ void setup() {
     }
   }
   Serial.println("DAC ok");
-  dac.beep();
+  dac.beep(); //hangs
 
   rfid.begin(1, 13);
 
