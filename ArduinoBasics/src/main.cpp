@@ -98,9 +98,11 @@ void setup() {
 
   digitalWrite(powerSD, 0);
   digitalWrite(powerDACPin, 1);
-  delay(100); 
+  delay(50); 
+  digitalWrite(resetDACPin, 0);
+  delay(10);
   digitalWrite(resetDACPin, 1);
-  delay(100);
+  delay(10);
   
   Wire.setPins(i2c_sda, i2c_scl);
   Wire.begin();
